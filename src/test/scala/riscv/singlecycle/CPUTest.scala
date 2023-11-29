@@ -113,3 +113,19 @@ class ByteAccessTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class zbyteTest extends AnyFlatSpec with ChiselScalatestTester {
+  behavior.of("Single Cycle CPU")
+  it should "zbyte test" in {
+    test(new TestTopModule("zbyte.asmbin")).withAnnotations(TestAnnotations.annos) { c =>
+      for (i <- 1 to 5000) {
+        c.clock.step()
+        c.io.mem_debug_read_address.poke((i * 4).U) // Avoid timeout
+      }
+      
+      c.io.mem_debug_read_address.poke(4.U)
+      c.clock.step()
+      c.io.mem_debug_read_data.expect(5.U)
+    }
+  }
+}
